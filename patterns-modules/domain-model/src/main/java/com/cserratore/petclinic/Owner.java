@@ -1,5 +1,8 @@
 package com.cserratore.petclinic;
 
+import java.time.Instant;
+import java.util.Optional;
+
 class Owner implements Entity {
     
     Owner(OwnerId id) {
@@ -16,6 +19,14 @@ class Owner implements Entity {
 
     OwnerId id(){
         return this.state.id();
+    }
+
+    Optional<Instant> registeredAt() {
+        return Optional.ofNullable(this.state.registeredAt());
+    }
+
+    Optional<Instant> suspendedAt() {
+        return Optional.ofNullable(this.state.suspendedAt());
     }
 
     PersonName name() {
@@ -40,6 +51,13 @@ class Owner implements Entity {
 
     void changePostalAddress(PostalAddress postalAddress) {
         this.state = state.changePostalAddress(postalAddress);
+    }
+
+    void suspend() {
+        if (this.state.suspendedAt() != null) {
+            throw new IllegalStateException("Owner already suspended");
+        }
+        this.state = state.suspend();
     }
 
     private OwnerState state;

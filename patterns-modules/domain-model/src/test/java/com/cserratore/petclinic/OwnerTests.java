@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 
-class RegisterOwnerTests {
+class OwnerTests {
     
     private static final String OWNER_FIRST_NAME = "John";
     private static final String OWNER_LAST_NAME = "Doe";
@@ -62,22 +62,20 @@ class RegisterOwnerTests {
 
         // given
         final UseCases usecases = new UseCases(this.ownerRepository);
-        final RegisterOwnerCommand command = new RegisterOwnerCommand(
-            OWNER_FIRST_NAME, 
-            OWNER_LAST_NAME, 
-            OWNER_PHONE_NUMBER, 
-            OWNER_ADDRESS_STREET, 
-            OWNER_ADDRESS_CITY, 
-            OWNER_ADDRESS_STATE_PROVINCE, 
-            OWNER_ADDRESS_POSTAL_CODE);
 
-        final RegisterOwnerResponse registerOwnerResponse = usecases.registerOwner(command);
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
         final String ownerId = registerOwnerResponse.ownerId();
 
         // when
-        final QueryOwnerById query = new QueryOwnerById(ownerId);
-
-        final OwnerByIdResponse response = usecases.queryOwnerById(query);
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
 
         // then
         assertEquals(OWNER_FIRST_NAME, response.firstName());
@@ -93,35 +91,33 @@ class RegisterOwnerTests {
     void testListOwners() {
         // given
         final UseCases usecases = new UseCases(this.ownerRepository);
-        final RegisterOwnerCommand command = new RegisterOwnerCommand(
+
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER_FIRST_NAME, 
             OWNER_LAST_NAME, 
             OWNER_PHONE_NUMBER, 
             OWNER_ADDRESS_STREET, 
             OWNER_ADDRESS_CITY, 
             OWNER_ADDRESS_STATE_PROVINCE, 
-            OWNER_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command);
+            OWNER_ADDRESS_POSTAL_CODE));
 
-        final RegisterOwnerCommand command2 = new RegisterOwnerCommand(
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER2_FIRST_NAME, 
             OWNER2_LAST_NAME, 
             OWNER2_PHONE_NUMBER, 
             OWNER2_ADDRESS_STREET, 
             OWNER2_ADDRESS_CITY, 
             OWNER2_ADDRESS_STATE_PROVINCE, 
-            OWNER2_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command2);
+            OWNER2_ADDRESS_POSTAL_CODE));
         
-        final RegisterOwnerCommand command3 = new RegisterOwnerCommand(
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER3_FIRST_NAME, 
             OWNER3_LAST_NAME, 
             OWNER3_PHONE_NUMBER, 
             OWNER3_ADDRESS_STREET, 
             OWNER3_ADDRESS_CITY, 
             OWNER3_ADDRESS_STATE_PROVINCE, 
-            OWNER3_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command3);
+            OWNER3_ADDRESS_POSTAL_CODE));
         
         // when
         final OwnersQuery query = new OwnersQuery(null);
@@ -138,35 +134,32 @@ class RegisterOwnerTests {
 
         // given
         final UseCases usecases = new UseCases(this.ownerRepository);
-        final RegisterOwnerCommand command = new RegisterOwnerCommand(
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER_FIRST_NAME, 
             OWNER_LAST_NAME, 
             OWNER_PHONE_NUMBER, 
             OWNER_ADDRESS_STREET, 
             OWNER_ADDRESS_CITY, 
             OWNER_ADDRESS_STATE_PROVINCE, 
-            OWNER_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command);
+            OWNER_ADDRESS_POSTAL_CODE));
 
-        final RegisterOwnerCommand command2 = new RegisterOwnerCommand(
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER2_FIRST_NAME, 
             OWNER2_LAST_NAME, 
             OWNER2_PHONE_NUMBER, 
             OWNER2_ADDRESS_STREET, 
             OWNER2_ADDRESS_CITY, 
             OWNER2_ADDRESS_STATE_PROVINCE, 
-            OWNER2_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command2);
+            OWNER2_ADDRESS_POSTAL_CODE));
         
-        final RegisterOwnerCommand command3 = new RegisterOwnerCommand(
+        usecases.registerOwner(new RegisterOwnerCommand(
             OWNER3_FIRST_NAME, 
             OWNER3_LAST_NAME, 
             OWNER3_PHONE_NUMBER, 
             OWNER3_ADDRESS_STREET, 
             OWNER3_ADDRESS_CITY, 
             OWNER3_ADDRESS_STATE_PROVINCE, 
-            OWNER3_ADDRESS_POSTAL_CODE);
-        usecases.registerOwner(command3);
+            OWNER3_ADDRESS_POSTAL_CODE));
         
         // when
         final OwnersQuery query = new OwnersQuery(OWNER_LAST_NAME);
@@ -175,5 +168,127 @@ class RegisterOwnerTests {
 
         // then
         assertEquals(2, response.size());
+    }
+
+    @Test
+    void testChangeOwnerName() {
+
+        // given
+        final UseCases usecases = new UseCases(this.ownerRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        final String ownerNewLastName = "Doe-Smith";
+
+        // when
+        usecases.changeOwnerName(new ChangeOwnerNameCommand(
+            ownerId,
+            OWNER_FIRST_NAME,
+            ownerNewLastName));
+
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
+
+        // then
+        assertEquals(ownerNewLastName, response.lastName());
+    }
+
+    @Test
+    void testChangeOwnerPhoneNumber() {
+
+        // given
+        final UseCases usecases = new UseCases(this.ownerRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        final String ownerNewPhoneNumber = "555-888-3333";
+
+        // when
+        usecases.changeOwnerPhoneNumber(new ChangeOwnerPhoneNumberCommand(
+            ownerId,
+            ownerNewPhoneNumber));
+
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
+
+        // then
+        assertEquals(ownerNewPhoneNumber, response.phoneNumber());
+    }
+
+    @Test
+    void testChangeOwnerPostalAddress() {
+
+        // given
+        final UseCases usecases = new UseCases(this.ownerRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        final String ownerNewAddressStreet = "1062 Regent Drive";
+
+        // when
+        usecases.changeOwnerPostalAddress(new ChangeOwnerPostalAddressCommand(
+            ownerId,
+            ownerNewAddressStreet,
+            OWNER_ADDRESS_CITY, 
+            OWNER_ADDRESS_STATE_PROVINCE, 
+            OWNER_ADDRESS_POSTAL_CODE));
+
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
+
+        // then
+        assertEquals(ownerNewAddressStreet, response.addressStreet());
+    }
+
+    @Test
+    void suspendOwner() {
+
+        // given
+        final UseCases usecases = new UseCases(this.ownerRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        // when
+        usecases.suspendOwner(new SuspendOwnerCommand(ownerId));
+
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
+
+        // then
+        assertNotNull(response.suspendedAt());
+
+
     }
 }

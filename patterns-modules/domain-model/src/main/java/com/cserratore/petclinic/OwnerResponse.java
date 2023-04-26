@@ -8,4 +8,6 @@ public record OwnerResponse(
     String addressStreet,
     String addressCity,
     String addressStateProvince,
-    String addressPostalCode) {}
+    String addressPostalCode,
+    String registeredAt,
+    String suspendedAt) {}

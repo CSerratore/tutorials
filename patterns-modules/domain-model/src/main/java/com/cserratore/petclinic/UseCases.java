@@ -1,13 +1,13 @@
 package com.cserratore.petclinic;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class UseCases implements ApplicationService {
     
-    public RegisterOwnerResponse registerOwner(RegisterOwnerCommand command) {
-        Owner owner = PetClinicService.registerOwner(
+    public RegisterOwnerResponse registerOwner(final RegisterOwnerCommand command) {
+        final Owner owner = PetClinicService.registerOwner(
             new PersonName(command.firstName(), command.lastName()),
             new PhoneNumber(command.phoneNumber()),
             new PostalAddress(
@@ -17,25 +17,28 @@ public class UseCases implements ApplicationService {
                 command.postalCode()));
         ownerRepository.add(owner);
 
-        RegisterOwnerResponse response = new RegisterOwnerResponse(owner.id().value());
+        final RegisterOwnerResponse response = new RegisterOwnerResponse(owner.id().value());
         return response;
     }
 
-    public OwnerByIdResponse queryOwnerById(QueryOwnerById query) {
-        Owner owner = ownerRepository.findById(new OwnerId(query.ownerId()));
+    public OwnerResponse queryOwnerById(final QueryOwnerById query) {
+        final Owner owner = ownerRepository.findById(new OwnerId(query.ownerId()));
 
-        OwnerByIdResponse response = new OwnerByIdResponse(
+        final OwnerResponse response = new OwnerResponse(
+            owner.id().toString(),
             owner.name().firstName(), 
             owner.name().lastName(), 
             owner.phoneNumber().value(), 
             owner.postalAddress().streetAddress(),
             owner.postalAddress().city(), 
             owner.postalAddress().stateProvince(), 
-            owner.postalAddress().postalCode());
+            owner.postalAddress().postalCode(),
+            owner.registeredAt().toString(),
+            owner.suspendedAt().toString());
         return response;
     }
 
-    public Collection<OwnerResponse> queryOwners(OwnersQuery query) {
+    public Collection<OwnerResponse> queryOwners(final OwnersQuery query) {
         Collection<Owner> owners;
         if (query.lastName() != null) {
             owners = ownerRepository.findByLastName(query.lastName());
@@ -43,7 +46,7 @@ public class UseCases implements ApplicationService {
             owners = ownerRepository.findAll();
         }
 
-        Collection<OwnerResponse> response = owners.stream()
+        final Collection<OwnerResponse> response = owners.stream()
             .map(s -> new OwnerResponse(
                 s.id().value(),
                 s.name().firstName(),
@@ -52,16 +55,50 @@ public class UseCases implements ApplicationService {
                 s.postalAddress().streetAddress(),
                 s.postalAddress().city(),
                 s.postalAddress().stateProvince(),
-                s.postalAddress().postalCode()))
+                s.postalAddress().postalCode(),
+                s.registeredAt()
+                    .map(Instant::toString)
+                    .orElse(null),
+                s.suspendedAt()
+                    .map(Instant::toString)
+                    .orElse(null)))
             .collect(Collectors.toList());
         return response;
     }
 
+    public void changeOwnerName(ChangeOwnerNameCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
-    public UseCases(OwnerRepository ownerRepository) {
+        owner.changeName(new PersonName(command.firstName(), command.lastName()));
+    }
+
+    public void changeOwnerPhoneNumber(ChangeOwnerPhoneNumberCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
+
+        owner.changePhoneNumber(new PhoneNumber(command.phoneNumber()));
+    }
+
+    public void changeOwnerPostalAddress(ChangeOwnerPostalAddressCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
+
+        owner.changePostalAddress(
+            new PostalAddress(
+                command.addressStreet(), 
+                command.addressCity(),
+                command.addressStateProvince() ,
+                command.addressPostalCode()));
+    }
+
+    public void suspendOwner(SuspendOwnerCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
+
+        owner.suspend();
+    }
+
+    public UseCases(final OwnerRepository ownerRepository) {
         this.ownerRepository = ownerRepository;
     }
 
 
-    private OwnerRepository ownerRepository;
+    private final OwnerRepository ownerRepository;
 }
