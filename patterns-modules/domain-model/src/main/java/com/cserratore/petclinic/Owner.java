@@ -55,9 +55,16 @@ class Owner implements Entity {
 
     void suspend() {
         if (this.state.suspendedAt() != null) {
-            throw new IllegalStateException("Owner already suspended");
+            throw new IllegalStateException("Attempt to suspend an already suspended owner.");
         }
         this.state = state.suspend();
+    }
+
+    void reinstate() {
+        if (this.state.suspendedAt() == null) {
+            throw new IllegalStateException("Attempt to reinstate an owner that is not suspended.");
+        }
+        this.state = state.reinstate();
     }
 
     private OwnerState state;

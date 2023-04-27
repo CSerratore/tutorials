@@ -2,6 +2,7 @@ package com.cserratore.petclinic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collection;
 
@@ -283,12 +284,35 @@ class OwnerTests {
 
         // when
         usecases.suspendOwner(new SuspendOwnerCommand(ownerId));
-
         final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
 
         // then
         assertNotNull(response.suspendedAt());
+    }
 
+    @Test
+    void reinstateOwner() {
 
+        // given
+        final UseCases usecases = new UseCases(this.ownerRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+        usecases.suspendOwner(new SuspendOwnerCommand(ownerId));
+
+        // when
+        usecases.reinstateOwner(new ReinstateOwnerCommand(ownerId));
+        final OwnerResponse response = usecases.queryOwnerById(new QueryOwnerById(ownerId));
+
+        // then
+        assertNull(response.suspendedAt());
     }
 }

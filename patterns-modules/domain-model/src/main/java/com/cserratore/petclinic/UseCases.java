@@ -2,6 +2,7 @@ package com.cserratore.petclinic;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UseCases implements ApplicationService {
@@ -33,8 +34,12 @@ public class UseCases implements ApplicationService {
             owner.postalAddress().city(), 
             owner.postalAddress().stateProvince(), 
             owner.postalAddress().postalCode(),
-            owner.registeredAt().toString(),
-            owner.suspendedAt().toString());
+            owner.registeredAt()
+                .map(Instant::toString)
+                .orElse(null),
+            owner.suspendedAt()
+                .map(Instant::toString)
+                .orElse(null));
         return response;
     }
 
@@ -93,6 +98,12 @@ public class UseCases implements ApplicationService {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.suspend();
+    }
+
+    public void reinstateOwner(ReinstateOwnerCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
+
+        owner.reinstate();
     }
 
     public UseCases(final OwnerRepository ownerRepository) {
