@@ -34,7 +34,11 @@ class OwnerTests {
     private static final String OWNER3_ADDRESS_STATE_PROVINCE = "ON";
     private static final String OWNER3_ADDRESS_POSTAL_CODE = "L7Y 7T3";
 
+    private static final String PET_NAME = "Spike";
+    private static final String PET_DATE_OF_BIRTH = "2010-10-10";
+
     private final OwnerRepository ownerRepository = new TestOwnerRepository();
+    private final PetRepository petRepository = new TestPetRepository();
 
     @Test
     void testRegisterOwnerReturnsOwnerId() {
@@ -42,7 +46,9 @@ class OwnerTests {
         // given
 
         // when 
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
         final RegisterOwnerCommand command = new RegisterOwnerCommand(
             OWNER_FIRST_NAME, 
             OWNER_LAST_NAME, 
@@ -62,7 +68,9 @@ class OwnerTests {
     void testFindOwnerByIdReturnsOwner() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -91,7 +99,9 @@ class OwnerTests {
     @Test
     void testListOwners() {
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         usecases.registerOwner(new RegisterOwnerCommand(
             OWNER_FIRST_NAME, 
@@ -134,7 +144,9 @@ class OwnerTests {
     void testListOwnersByLastName() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
         usecases.registerOwner(new RegisterOwnerCommand(
             OWNER_FIRST_NAME, 
             OWNER_LAST_NAME, 
@@ -175,7 +187,9 @@ class OwnerTests {
     void testChangeOwnerName() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -206,7 +220,9 @@ class OwnerTests {
     void testChangeOwnerPhoneNumber() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -236,7 +252,9 @@ class OwnerTests {
     void testChangeOwnerPostalAddress() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -269,7 +287,9 @@ class OwnerTests {
     void suspendOwner() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -294,7 +314,9 @@ class OwnerTests {
     void reinstateOwner() {
 
         // given
-        final UseCases usecases = new UseCases(this.ownerRepository);
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
 
         final RegisterOwnerResponse registerOwnerResponse = usecases
             .registerOwner(new RegisterOwnerCommand(
@@ -315,4 +337,35 @@ class OwnerTests {
         // then
         assertNull(response.suspendedAt());
     }
+
+    @Test
+    void registerPetReturnsPetId() {
+        
+        // given
+        final OwnerUseCases usecases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = usecases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        // when
+        final RegisterPetResponse registerPetResponse = usecases
+            .registerPet(new RegisterPetCommand(
+                ownerId,
+                PET_NAME,
+                PET_DATE_OF_BIRTH));
+
+        // then
+        assertNotNull(registerPetResponse.petId());
+    }
+
 }

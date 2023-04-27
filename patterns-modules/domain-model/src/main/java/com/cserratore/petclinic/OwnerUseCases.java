@@ -1,11 +1,11 @@
 package com.cserratore.petclinic;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UseCases implements ApplicationService {
+public class OwnerUseCases implements ApplicationService {
     
     public RegisterOwnerResponse registerOwner(final RegisterOwnerCommand command) {
         final Owner owner = PetClinicService.registerOwner(
@@ -71,19 +71,19 @@ public class UseCases implements ApplicationService {
         return response;
     }
 
-    public void changeOwnerName(ChangeOwnerNameCommand command) {
+    public void changeOwnerName(final ChangeOwnerNameCommand command) {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.changeName(new PersonName(command.firstName(), command.lastName()));
     }
 
-    public void changeOwnerPhoneNumber(ChangeOwnerPhoneNumberCommand command) {
+    public void changeOwnerPhoneNumber(final ChangeOwnerPhoneNumberCommand command) {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.changePhoneNumber(new PhoneNumber(command.phoneNumber()));
     }
 
-    public void changeOwnerPostalAddress(ChangeOwnerPostalAddressCommand command) {
+    public void changeOwnerPostalAddress(final ChangeOwnerPostalAddressCommand command) {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.changePostalAddress(
@@ -94,22 +94,38 @@ public class UseCases implements ApplicationService {
                 command.addressPostalCode()));
     }
 
-    public void suspendOwner(SuspendOwnerCommand command) {
+    public void suspendOwner(final SuspendOwnerCommand command) {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.suspend();
     }
 
-    public void reinstateOwner(ReinstateOwnerCommand command) {
+    public void reinstateOwner(final ReinstateOwnerCommand command) {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         owner.reinstate();
     }
 
-    public UseCases(final OwnerRepository ownerRepository) {
+    public RegisterPetResponse registerPet(final RegisterPetCommand command) {
+        final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
+
+        final Pet pet = owner.registerPet(
+            new Name(command.petName()),
+            LocalDate.parse(command.dateOfBirth()));
+        petRepository.add(pet);
+
+        final RegisterPetResponse response = new RegisterPetResponse(pet.id().value());
+        return response;
+    }
+
+    public OwnerUseCases(
+        final OwnerRepository ownerRepository,
+        final PetRepository petRepository) {
         this.ownerRepository = ownerRepository;
+        this.petRepository = petRepository;
     }
 
 
     private final OwnerRepository ownerRepository;
+    private final PetRepository petRepository;
 }

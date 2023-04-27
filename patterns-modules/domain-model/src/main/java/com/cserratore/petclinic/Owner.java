@@ -1,7 +1,9 @@
 package com.cserratore.petclinic;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 class Owner implements Entity {
     
@@ -65,6 +67,12 @@ class Owner implements Entity {
             throw new IllegalStateException("Attempt to reinstate an owner that is not suspended.");
         }
         this.state = state.reinstate();
+    }
+
+    Pet registerPet(Name name, LocalDate dateOfBirth) {
+        Pet pet = new Pet(new PetId(UUID.randomUUID().toString()));
+        pet.register(name, dateOfBirth, this.id());
+        return pet;
     }
 
     private OwnerState state;
