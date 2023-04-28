@@ -14,4 +14,10 @@ class PetClinicService implements DomainService {
         return owner;
     }
     
+    static PetType addPetType(Name name) {
+        PetType petType = new PetType(new PetTypeId(UUID.randomUUID().toString()));
+        petType.add(name);
+        return petType;
+    }
+
 }
