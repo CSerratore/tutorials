@@ -1,5 +1,8 @@
 package com.cserratore.petclinic;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 public class PetTypeUseCases implements ApplicationService {
 
     public AddPetTypeResponse addPetType(final AddPetTypeCommand command) {
@@ -15,6 +18,18 @@ public class PetTypeUseCases implements ApplicationService {
         final PetType petType = petTypeRepository.findById(new PetTypeId(query.petTypeId()));
 
         return new PetTypeResponse(petType.id().toString(), petType.name().value());
+    }
+
+    public Collection<PetTypeResponse> queryPetTypes() {
+        Collection<PetType> petTypes = petTypeRepository.findAll();
+        
+        final Collection<PetTypeResponse> response = petTypes
+            .stream()
+            .map(s -> new PetTypeResponse(
+                s.id().value(),
+                s.name().value()))
+            .collect(Collectors.toList());
+        return response;
     }
 
     public PetTypeUseCases(
