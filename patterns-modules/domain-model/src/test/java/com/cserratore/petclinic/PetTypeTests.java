@@ -1,5 +1,6 @@
 package com.cserratore.petclinic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
@@ -25,4 +26,22 @@ class PetTypeTests {
         assertNotNull(response.petTypeId());
     }
     
+    @Test
+    void testFindPetTypeByIdReturnsPetType() {
+
+        // given
+        final PetTypeUseCases usecases = new PetTypeUseCases(
+            this.petTypeRepository);
+
+        final AddPetTypeResponse addPetTypeResponse = usecases
+            .addPetType(new AddPetTypeCommand(PET_TYPE_DOG_NAME));
+        final String petTypeId = addPetTypeResponse.petTypeId();
+
+        // when
+        final PetTypeResponse response = usecases.queryPetTypeById(new QueryPetTypeById(petTypeId));
+
+        // then
+        assertEquals(PET_TYPE_DOG_NAME, response.name());
+    }
+
 }

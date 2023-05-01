@@ -15,6 +15,10 @@ class PetType implements Entity {
         return this.state.id();
     }
 
+    Name name() {
+        return this.state.name();
+    }
+
 
     private PetTypeState state;
 }

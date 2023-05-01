@@ -11,6 +11,12 @@ public class PetTypeUseCases implements ApplicationService {
         return response;
     }
 
+    public PetTypeResponse queryPetTypeById(QueryPetTypeById query) {
+        final PetType petType = petTypeRepository.findById(new PetTypeId(query.petTypeId()));
+
+        return new PetTypeResponse(petType.id().toString(), petType.name().value());
+    }
+
     public PetTypeUseCases(
         final PetTypeRepository petTypeRepository) {
             this.petTypeRepository = petTypeRepository;

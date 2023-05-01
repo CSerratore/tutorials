@@ -14,6 +14,12 @@ public class TestPetTypeRepository implements PetTypeRepository {
         petTypes.put(petType.id(), petType);
     }
 
+
+    @Override
+    public PetType findById(PetTypeId id) {
+        return petTypes.get(id);
+    }
+
     
     private Map<PetTypeId, PetType> petTypes;
 }
