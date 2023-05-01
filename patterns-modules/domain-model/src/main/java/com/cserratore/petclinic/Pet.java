@@ -11,11 +11,12 @@ class Pet implements Entity {
     }
     
     void register(
+        PetTypeId petTypeId,
         Name name,
         LocalDate dateOfBirth, 
         OwnerId ownerId) {
         
-        this.state = state.register(name, dateOfBirth, ownerId);
+        this.state = state.register(petTypeId, name, dateOfBirth, ownerId);
     }
 
     PetId id(){

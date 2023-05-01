@@ -37,8 +37,12 @@ class OwnerTests {
     private static final String PET_NAME = "Spike";
     private static final String PET_DATE_OF_BIRTH = "2010-10-10";
 
+    private static final String PET_TYPE_CAT_NAME = "cat";
+
     private final OwnerRepository ownerRepository = new TestOwnerRepository();
     private final PetRepository petRepository = new TestPetRepository();
+    private final PetTypeRepository petTypeRepository = new TestPetTypeRepository();
+
 
     @Test
     void testRegisterOwnerReturnsOwnerId() {
@@ -342,11 +346,11 @@ class OwnerTests {
     void registerPetReturnsPetId() {
         
         // given
-        final OwnerUseCases usecases = new OwnerUseCases(
+        final OwnerUseCases ownerUseCases = new OwnerUseCases(
             this.ownerRepository,
             this.petRepository);
 
-        final RegisterOwnerResponse registerOwnerResponse = usecases
+        final RegisterOwnerResponse registerOwnerResponse = ownerUseCases
             .registerOwner(new RegisterOwnerCommand(
                 OWNER_FIRST_NAME, 
                 OWNER_LAST_NAME, 
@@ -357,10 +361,18 @@ class OwnerTests {
                 OWNER_ADDRESS_POSTAL_CODE));
         final String ownerId = registerOwnerResponse.ownerId();
 
+        final PetTypeUseCases petTypeUseCases = new PetTypeUseCases(
+            this.petTypeRepository);
+
+        final AddPetTypeResponse addPetTypeResponse = petTypeUseCases
+            .addPetType(new AddPetTypeCommand(PET_TYPE_CAT_NAME));
+        final String petTypeId = addPetTypeResponse.petTypeId();
+
         // when
-        final RegisterPetResponse registerPetResponse = usecases
+        final RegisterPetResponse registerPetResponse = ownerUseCases
             .registerPet(new RegisterPetCommand(
                 ownerId,
+                petTypeId,
                 PET_NAME,
                 PET_DATE_OF_BIRTH));
 

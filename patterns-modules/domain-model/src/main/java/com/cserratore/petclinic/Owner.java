@@ -69,9 +69,9 @@ class Owner implements Entity {
         this.state = state.reinstate();
     }
 
-    Pet registerPet(Name name, LocalDate dateOfBirth) {
+    Pet registerPet(PetTypeId petTypeId, Name name, LocalDate dateOfBirth) {
         Pet pet = new Pet(new PetId(UUID.randomUUID().toString()));
-        pet.register(name, dateOfBirth, this.id());
+        pet.register(petTypeId, name, dateOfBirth, this.id());
         return pet;
     }
 

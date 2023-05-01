@@ -110,6 +110,7 @@ public class OwnerUseCases implements ApplicationService {
         final Owner owner = ownerRepository.findById(new OwnerId(command.ownerId()));
 
         final Pet pet = owner.registerPet(
+            new PetTypeId(command.petTypeId()),
             new Name(command.petName()),
             LocalDate.parse(command.dateOfBirth()));
         petRepository.add(pet);
