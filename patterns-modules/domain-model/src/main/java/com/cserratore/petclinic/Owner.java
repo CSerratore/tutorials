@@ -70,6 +70,9 @@ class Owner implements Entity {
     }
 
     Pet registerPet(PetTypeId petTypeId, Name name, LocalDate dateOfBirth) {
+        if (this.state.suspendedAt() != null) {
+            throw new IllegalStateException("Attempt to register a pet to a suspended owner");
+        }
         Pet pet = new Pet(new PetId(UUID.randomUUID().toString()));
         pet.register(petTypeId, name, dateOfBirth, this.id());
         return pet;

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collection;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class OwnerTests {
@@ -288,7 +289,7 @@ class OwnerTests {
     }
 
     @Test
-    void suspendOwner() {
+    void testSuspendOwner() {
 
         // given
         final OwnerUseCases usecases = new OwnerUseCases(
@@ -315,7 +316,7 @@ class OwnerTests {
     }
 
     @Test
-    void reinstateOwner() {
+    void testReinstateOwner() {
 
         // given
         final OwnerUseCases usecases = new OwnerUseCases(
@@ -343,7 +344,44 @@ class OwnerTests {
     }
 
     @Test
-    void registerPetReturnsPetId() {
+    void testRegisterPetReturnsPetId() {
+        
+        // given
+        final OwnerUseCases ownerUseCases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = ownerUseCases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+        final PetTypeUseCases petTypeUseCases = new PetTypeUseCases(
+            this.petTypeRepository);
+
+        final AddPetTypeResponse addPetTypeResponse = petTypeUseCases
+            .addPetType(new AddPetTypeCommand(PET_TYPE_CAT_NAME));
+        final String petTypeId = addPetTypeResponse.petTypeId();
+
+        // when
+        final RegisterPetResponse registerPetResponse = ownerUseCases
+            .registerPet(new RegisterPetCommand(
+                ownerId,
+                petTypeId,
+                PET_NAME,
+                PET_DATE_OF_BIRTH));
+
+        // then
+        assertNotNull(registerPetResponse.petId());
+    }
+
+    @Test
+    void testRegisterPetSuspendedOwnerReturnsException() {
         
         // given
         final OwnerUseCases ownerUseCases = new OwnerUseCases(
@@ -367,6 +405,46 @@ class OwnerTests {
         final AddPetTypeResponse addPetTypeResponse = petTypeUseCases
             .addPetType(new AddPetTypeCommand(PET_TYPE_CAT_NAME));
         final String petTypeId = addPetTypeResponse.petTypeId();
+        ownerUseCases.suspendOwner(new SuspendOwnerCommand(ownerId));
+
+        // when, then
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            ownerUseCases
+            .registerPet(new RegisterPetCommand(
+                ownerId,
+                petTypeId,
+                PET_NAME,
+                PET_DATE_OF_BIRTH));
+        });
+    }
+
+    @Test
+    void testRegisterPetReinstatedOwnerReturnsPetId() {
+        
+        // given
+        final OwnerUseCases ownerUseCases = new OwnerUseCases(
+            this.ownerRepository,
+            this.petRepository);
+
+        final RegisterOwnerResponse registerOwnerResponse = ownerUseCases
+            .registerOwner(new RegisterOwnerCommand(
+                OWNER_FIRST_NAME, 
+                OWNER_LAST_NAME, 
+                OWNER_PHONE_NUMBER, 
+                OWNER_ADDRESS_STREET, 
+                OWNER_ADDRESS_CITY, 
+                OWNER_ADDRESS_STATE_PROVINCE, 
+                OWNER_ADDRESS_POSTAL_CODE));
+        final String ownerId = registerOwnerResponse.ownerId();
+
+        final PetTypeUseCases petTypeUseCases = new PetTypeUseCases(
+            this.petTypeRepository);
+
+        final AddPetTypeResponse addPetTypeResponse = petTypeUseCases
+            .addPetType(new AddPetTypeCommand(PET_TYPE_CAT_NAME));
+        final String petTypeId = addPetTypeResponse.petTypeId();
+        ownerUseCases.suspendOwner(new SuspendOwnerCommand(ownerId));
+        ownerUseCases.reinstateOwner(new ReinstateOwnerCommand(ownerId));
 
         // when
         final RegisterPetResponse registerPetResponse = ownerUseCases
@@ -381,3 +459,4 @@ class OwnerTests {
     }
 
 }
+
