@@ -15,7 +15,13 @@ public class VetUseCases implements ApplicationService {
         return response;
     }
 
-
+    public VetResponse queryVetById(final VetByIdQuery query) {
+        Vet vet = vetRepository.findById(new VetId(query.vetId()));
+        return new VetResponse(
+            vet.id().value(),
+            vet.name().firstName(),
+            vet.name().lastName());
+    }
 
 
     private VetRepository vetRepository;

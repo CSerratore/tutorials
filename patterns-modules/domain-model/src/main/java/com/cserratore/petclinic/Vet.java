@@ -15,6 +15,10 @@ public class Vet implements Entity {
         return this.state.id();
     }
 
+    PersonName name() {
+        return this.state.name();
+    }
+
 
     private VetState state;
     

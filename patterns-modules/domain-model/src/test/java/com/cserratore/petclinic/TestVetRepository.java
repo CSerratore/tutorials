@@ -14,6 +14,16 @@ class TestVetRepository implements VetRepository {
         vets.put(vet.id(), vet);
     }
 
+    @Override
+    public Vet findById(VetId id) {
+        return vets.get(id);
+    }
+    
+
 
     private Map<VetId, Vet> vets;
+
+
+
+
 }

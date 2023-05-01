@@ -1,5 +1,6 @@
 package com.cserratore.petclinic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
@@ -28,4 +29,27 @@ class VetTests {
         // then
         assertNotNull(response.vetId());
     }
+
+    @Test
+    void findVetByIdReturnsOwner() {
+
+        // given 
+        final VetUseCases usecases = new VetUseCases(this.VetRepository);
+        final AddVetResponse addVetResponse = usecases
+            .addVet(
+                new AddVetCommand(
+                    VET_FIRST_NAME,
+                    VET_LAST_NAME));
+        final String vetId = addVetResponse.vetId();
+
+        // when
+        final VetResponse response = usecases
+            .queryVetById(new VetByIdQuery(vetId));
+
+
+        // then
+        assertEquals(VET_FIRST_NAME, response.firstName());
+        assertEquals(VET_LAST_NAME, response.lastName());
+    }
+
 }
