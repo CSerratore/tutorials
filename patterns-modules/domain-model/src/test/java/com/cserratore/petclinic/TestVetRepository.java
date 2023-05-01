@@ -1,5 +1,6 @@
 package com.cserratore.petclinic;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,12 +19,13 @@ class TestVetRepository implements VetRepository {
     public Vet findById(VetId id) {
         return vets.get(id);
     }
+
+    @Override
+    public Collection<Vet> findAll() {
+        return vets.values();
+    }
     
 
 
     private Map<VetId, Vet> vets;
-
-
-
-
 }

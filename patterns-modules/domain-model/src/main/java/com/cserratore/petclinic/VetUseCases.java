@@ -1,5 +1,8 @@
 package com.cserratore.petclinic;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 public class VetUseCases implements ApplicationService {
 
     public VetUseCases(VetRepository vetRepository) {
@@ -23,6 +26,18 @@ public class VetUseCases implements ApplicationService {
             vet.name().lastName());
     }
 
+    public Collection<VetResponse> queryAllVets() {
+        final Collection<Vet> vets = vetRepository.findAll();
+
+        final Collection<VetResponse> response = vets
+            .stream()
+            .map(s -> new VetResponse(
+                s.id().value(),
+                s.name().firstName(),
+                s.name().lastName()))
+            .collect(Collectors.toList());
+        return response;
+    }
 
     private VetRepository vetRepository;
     
