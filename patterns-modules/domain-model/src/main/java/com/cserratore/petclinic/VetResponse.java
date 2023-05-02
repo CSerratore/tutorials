@@ -3,4 +3,5 @@ package com.cserratore.petclinic;
 public record VetResponse(
     String vetId,
     String firstName,
-    String lastName) {}
+    String lastName,
+    String resignedAt) {}

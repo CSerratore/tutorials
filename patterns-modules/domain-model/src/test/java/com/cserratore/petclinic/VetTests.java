@@ -115,4 +115,24 @@ class VetTests {
         // then
         assertEquals(vetNewLastName, response.lastName());
     }
+
+    @Test
+    void testResignVet() {
+
+        // given
+        final VetUseCases usecases = new VetUseCases(this.VetRepository);
+        final AddVetResponse addVetResponse = usecases
+            .addVet(
+                new AddVetCommand(
+                    VET_FIRST_NAME,
+                    VET_LAST_NAME));
+       final String vetId = addVetResponse.vetId();
+
+        // when
+        usecases.resignVet(new ResignVetCommand(vetId));
+        final VetResponse response = usecases.queryVetById(new VetByIdQuery(vetId));
+
+        // then
+        assertNotNull(response.resignedAt());
+    }
 }

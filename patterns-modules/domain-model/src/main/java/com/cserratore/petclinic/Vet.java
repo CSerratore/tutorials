@@ -1,5 +1,8 @@
 package com.cserratore.petclinic;
 
+import java.time.Instant;
+import java.util.Optional;
+
 public class Vet implements Entity {
 
     Vet(VetId id) {
@@ -21,6 +24,14 @@ public class Vet implements Entity {
 
     void changeName(PersonName name) {
         this.state = state.changeName(name);
+    }
+
+    void resign() {
+        this.state = state.resign();
+    }
+
+    Optional<Instant> resignedAt() {
+        return Optional.ofNullable(this.state.resignedAt());
     }
 
 

@@ -1,5 +1,6 @@
 package com.cserratore.petclinic;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,10 @@ public class VetUseCases implements ApplicationService {
         return new VetResponse(
             vet.id().value(),
             vet.name().firstName(),
-            vet.name().lastName());
+            vet.name().lastName(),
+            vet.resignedAt()
+                .map(Instant::toString)
+                .orElse(null));
     }
 
     public Collection<VetResponse> queryAllVets() {
@@ -34,7 +38,10 @@ public class VetUseCases implements ApplicationService {
             .map(s -> new VetResponse(
                 s.id().value(),
                 s.name().firstName(),
-                s.name().lastName()))
+                s.name().lastName(),
+                s.resignedAt()
+                    .map(Instant::toString)
+                    .orElse(null)))
             .collect(Collectors.toList());
         return response;
     }
@@ -42,6 +49,11 @@ public class VetUseCases implements ApplicationService {
     public void changeVetName(final ChangeVetNameCommand command) {
         final Vet vet = vetRepository.findById(new VetId(command.vetId()));
         vet.changeName(new PersonName(command.firstName(), command.lastName()));
+    }
+
+    public void resignVet(final ResignVetCommand command) {
+        final Vet vet = vetRepository.findById(new VetId(command.vetId()));
+        vet.resign();
     }
 
     private VetRepository vetRepository;
