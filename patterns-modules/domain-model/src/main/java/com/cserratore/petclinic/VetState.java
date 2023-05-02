@@ -9,4 +9,9 @@ record VetState(VetId id, PersonName name) {
     VetState add(PersonName name) {
         return new VetState(this.id, name);
     }
+
+    VetState changeName(final PersonName name) {
+        return new VetState(this.id, name);
+    }
+
 }

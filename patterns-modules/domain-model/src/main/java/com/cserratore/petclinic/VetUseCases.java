@@ -39,6 +39,11 @@ public class VetUseCases implements ApplicationService {
         return response;
     }
 
+    public void changeVetName(final ChangeVetNameCommand command) {
+        final Vet vet = vetRepository.findById(new VetId(command.vetId()));
+        vet.changeName(new PersonName(command.firstName(), command.lastName()));
+    }
+
     private VetRepository vetRepository;
     
 }

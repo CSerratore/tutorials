@@ -19,6 +19,10 @@ public class Vet implements Entity {
         return this.state.name();
     }
 
+    void changeName(PersonName name) {
+        this.state = state.changeName(name);
+    }
+
 
     private VetState state;
     
